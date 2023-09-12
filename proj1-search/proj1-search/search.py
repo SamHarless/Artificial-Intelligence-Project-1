@@ -282,34 +282,27 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+    #print("SHITTER MOMENT")
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
 
-    from searchAgents import manhattanHeuristic, euclideanHeuristic
-
-
-    print("HERE")
-    print(manhattanHeuristic((5,5), problem))
-    
+    #from searchAgents import manhattanHeuristic, euclideanHeuristic    
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    
 
-
-    
     pq=PriorityQueue()
     pq.push((problem.getStartState(), None, None, 0),0)#start has a cost of 0 bc you are alrady there
 
     dict={}
 
+    #print(problem.getSuccessors(problem.getStartState()))
+
 
     while not pq.isEmpty():
-
-
-
         currNodeTuple=pq.pop()
         currNode=currNodeTuple[0]
+        #print(currNodeTuple)
         if currNode not in dict:
             dict[currNode]=(currNodeTuple[1],currNodeTuple[2],currNodeTuple[3])
             
@@ -325,7 +318,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     stringList.append(reversedList[index])
                     index-=1
                 #print(stringToDirections(stringList))
-                return stringToDirections(stringList)
+                return stringToDirections(stringList)   
 
             
             for succ in problem.getSuccessors(currNode):
@@ -333,9 +326,15 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     pass
                 else:
                     #need to keep track of the cumulative cost
-                    cost=dict[currNode][2]+succ[2]+manhattanHeuristic(succ[0],problem)
-                    pq.push((succ[0], succ[1], currNode, cost), cost)
+                    cost=currNodeTuple[3]+succ[2]
+                    costWH=cost+heuristic(succ[0],problem)
+                    pq.push((succ[0], succ[1], currNode, cost), costWH)
                     #dict[succ[0]]=(succ[1], currNode, cost)
+
+                    #0 is name of node
+                    #1 is action to get to it
+                    #2 is the node it came from (one we are currently looking at)
+                    #cost includes heuristic, which it shouldnt
 
 
 
