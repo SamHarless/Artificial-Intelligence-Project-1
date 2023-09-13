@@ -183,7 +183,7 @@ def breadthFirstSearch(problem):
     #print(problem.getStartState())
 
     
-    
+    #hate question 5, so this checks to see if we are doing a regular BFS or a corner one, and does different things for each
     if len(problem.getStartState()) == 1 or len(problem.getStartState())<3:
         q=Queue()
         q.push((problem.getStartState(), None, None))
@@ -279,8 +279,11 @@ def breadthFirstSearch(problem):
 
 
                 for succ in problem.getSuccessors(currNodeTuple[0]):
+                    if (succ[0], currNodeTuple[0][1], succ[2]) in visitedDict:
+                        pass
                     #getSucc will return: ((x,y), N/S/W/E, (False, False, True, False))
-                    q.push(((succ[0], currNodeTuple[0][1], succ[2]), succ[1], currNodeTuple[0]))
+                    else:
+                        q.push(((succ[0], currNodeTuple[0][1], succ[2]), succ[1], currNodeTuple[0]))
 
     util.raiseNotDefined()
 
@@ -347,52 +350,110 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #from searchAgents import manhattanHeuristic, euclideanHeuristic    
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    if len(problem.getStartState()) == 1 or len(problem.getStartState())<3:
+        pq=PriorityQueue()
+        pq.push((problem.getStartState(), None, None, 0),0)#start has a cost of 0 bc you are alrady there
 
-    pq=PriorityQueue()
-    pq.push((problem.getStartState(), None, None, 0),0)#start has a cost of 0 bc you are alrady there
+        dict={}
 
-    dict={}
-
-    #print(problem.getSuccessors(problem.getStartState()))
+        #print(problem.getSuccessors(problem.getStartState()))
 
 
-    while not pq.isEmpty():
-        currNodeTuple=pq.pop()
-        currNode=currNodeTuple[0]
-        #print(currNodeTuple)
-        if currNode not in dict:
-            dict[currNode]=(currNodeTuple[1],currNodeTuple[2],currNodeTuple[3])
+        while not pq.isEmpty():
+            currNodeTuple=pq.pop()
+            currNode=currNodeTuple[0]
+            #print(currNodeTuple)
+            if currNode not in dict:
+                dict[currNode]=(currNodeTuple[1],currNodeTuple[2],currNodeTuple[3])
+                
+                if problem.isGoalState(currNode):
+                    reversedList=[]
+                    while problem.getStartState() != currNode:
+                        reversedList.append(dict[currNode][0])
+                        currNode=dict[currNode][1]
+                    #REVERSE LIST
+                    index=len(reversedList)-1
+                    stringList=[]
+                    while index >= 0:
+                        stringList.append(reversedList[index])
+                        index-=1
+                    #print(stringToDirections(stringList))
+                    return stringToDirections(stringList)   
+
+                
+                for succ in problem.getSuccessors(currNode):
+                    if succ[0] in dict:
+                        pass
+                    else:
+                        #need to keep track of the cumulative cost
+                        cost=currNodeTuple[3]+succ[2]
+                        costWH=cost+heuristic(succ[0],problem)
+                        pq.push((succ[0], succ[1], currNode, cost), costWH)
+                        #dict[succ[0]]=(succ[1], currNode, cost)
+
+                        #0 is name of node
+                        #1 is action to get to it
+                        #2 is the node it came from (one we are currently looking at)
+                        #cost includes heuristic, which it shouldnt
+    else:
+        from searchAgents import cornersHeuristic
+        #print("ELSE")
+        q=Queue()
+        #print(problem.getStartState())
+        q.push(((problem.getStartState()), None, None)) #(staterepresentation, direction, cameFrom)
+
+        visitedDict={}
+
+        pq=PriorityQueue()
+        pq.push((problem.getStartState(), None, None, 0), 0) 
+        #(state, direction to get here, cameFrom, costSoFar)
+        #print("Tester: ", problem.getSuccessors(problem.getStartState()))
+        #print("HERE")
+        while not pq.isEmpty():
             
-            if problem.isGoalState(currNode):
-                reversedList=[]
-                while problem.getStartState() != currNode:
-                    reversedList.append(dict[currNode][0])
-                    currNode=dict[currNode][1]
-                #REVERSE LIST
-                index=len(reversedList)-1
-                stringList=[]
-                while index >= 0:
-                    stringList.append(reversedList[index])
-                    index-=1
-                #print(stringToDirections(stringList))
-                return stringToDirections(stringList)   
+            currNodeTuple=pq.pop()
+            #print("Curr: ", currNodeTuple)
+            #print(currNodeTuple[0])
 
-            
-            for succ in problem.getSuccessors(currNode):
-                if succ[0] in dict:
-                    pass
-                else:
-                    #need to keep track of the cumulative cost
-                    cost=currNodeTuple[3]+succ[2]
-                    costWH=cost+heuristic(succ[0],problem)
-                    pq.push((succ[0], succ[1], currNode, cost), costWH)
-                    #dict[succ[0]]=(succ[1], currNode, cost)
+            if currNodeTuple[0] not in visitedDict:
+                visitedDict[currNodeTuple[0]]=(currNodeTuple[1], currNodeTuple[2]) #(action, nodeFrom)
 
-                    #0 is name of node
-                    #1 is action to get to it
-                    #2 is the node it came from (one we are currently looking at)
-                    #cost includes heuristic, which it shouldnt
 
+
+                if problem.isGoalState(currNodeTuple[0]):
+                    #print(currNodeTuple)
+                    #do some shite
+                    reversedList=[]
+                    #reversedList.append(currNodeTuple[1])
+                    currNode=visitedDict[currNodeTuple[2]]
+                    while currNode[1] != problem.getStartState():
+                        reversedList.append(currNode[0])
+                        currNode=visitedDict[currNode[1]]
+                        #print(currNode)
+                    reversedList.append(currNode[0])
+                    #print(reversedList)
+
+                    index=len(reversedList)-1
+                    stringList=[]
+                    while index >= 0:
+                        stringList.append(reversedList[index])
+                        index-=1
+
+                    return stringList
+
+
+
+                for succ in problem.getSuccessors(currNodeTuple[0]):
+                    if succ[0] in visitedDict:
+                        pass
+                    else:
+                        cost=currNodeTuple[3]+1
+                        angie=cornersHeuristic(succ, problem)
+                        #print(type(angie))
+                        #ssprint(angie)
+                        costWH=cost+angie
+                        #getSucc will return: ((x,y), N/S/W/E, (False, False, True, False))
+                        pq.push(((succ[0], currNodeTuple[0][1], succ[2]), succ[1], currNodeTuple[0], cost), costWH)
 
 
     util.raiseNotDefined()

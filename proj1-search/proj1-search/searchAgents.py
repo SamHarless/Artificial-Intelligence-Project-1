@@ -306,12 +306,33 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         #print(self.corners)
         index=0
+
+        
         self.cornerDict={}
+        self.numToCornerDict={}
         for corner in self.corners:
             self.cornerDict[corner]=index
+            self.numToCornerDict[index]=corner
             index+=1
         
+        
+        """
+        cornerDict={}
+        for corner in self.corners:
+            cornerDict[(self.startingPosition, corner)]=mazeDistance(self.startingPosition, corner, startingGameState)
+            for corner2 in self.corners:
+                if corner==corner2:
+                    pass
+                elif (corner, corner2) in cornerDict or (corner2, corner) in cornerDict:
+                    pass
+                else:
+                    #def mazeDistance(point1, point2, gameState):
+                    cornerDict[(corner, corner2)]=mazeDistance(corner, corner2, startingGameState)
+                    cornerDict[(corner2, corner)]=cornerDict[(corner, corner2)]
 
+        print(self._expanded)
+        print(cornerDict)
+        """
 
     def getStartState(self):
         """
@@ -392,6 +413,9 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
+def myMan(xy1, xy2):
+    
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 def cornersHeuristic(state, problem):
     """
@@ -406,11 +430,32 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+    #print("HERE")
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
+    if state[2][0] and state[2][1] and state[2][2] and state[2][3]:
+        #print("ALL TRUE")
+        return 0
+    
+    index=0
+    minDistToACorner=float('inf')
+    while index < 4:
+        if not state[2][index]:
+            minDistToACorner=min(minDistToACorner, myMan(problem.numToCornerDict[index], state[0]))
+        index+=1
+    #print(minDistToACorner)
+    return minDistToACorner
+
+    #print(state)
+    sum=0
+    for corn in state[2]:
+        if not corn:
+            sum+=1
+
+
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    return sum # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -589,4 +634,6 @@ def mazeDistance(point1, point2, gameState):
     assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
-    return len(search.bfs(prob))
+    tempLen=len(search.bfs(prob))
+    print(prob._expanded)
+    return tempLen
