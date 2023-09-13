@@ -265,7 +265,23 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
+""""
+        cornerDict={}
+        for corner in self.corners:
+            
+            for corner2 in self.corners:
+                if corner==corner2:
+                    pass
+                elif (corner, corner2) in cornerDict or (corner2, corner) in cornerDict:
+                    pass
+                else:
+                    #def mazeDistance(point1, point2, gameState):
+                    cornerDict[(corner, corner2)]=mazeDistance(corner, corner2, startingGameState)
+                    cornerDict[(corner2, corner)]=cornerDict[(corner, corner2)]
 
+        print(self._expanded)
+        print(cornerDict)
+        """
 class CornersProblem(search.SearchProblem):
     """
     This search problem finds paths through all four corners of a layout.
@@ -288,6 +304,14 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        #print(self.corners)
+        index=0
+        self.cornerDict={}
+        for corner in self.corners:
+            self.cornerDict[corner]=index
+            index+=1
+        
+
 
     def getStartState(self):
         """
@@ -295,6 +319,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        return (self.startingPosition, self.startingPosition, (False, False, False, False))
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +327,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        return state[2][0] and state[2][1] and state[2][2] and state[2][3]
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -324,9 +350,33 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
+            #print("State: ", state)
+            currNode=state[0]
+            x=currNode[0]
+            y=currNode[1]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x+dx), int(y+dy)
+
+            if not self.walls[nextx][nexty]:
+                
+                if (x,y) in self.corners:
+                    for corner in self.corners:
+                        if (x, y) == corner:
+                            
+                            cornersList=list(state[2])
+                            cornersList[self.cornerDict[corner]]=True
+                            
+                            successors.append(((nextx, nexty), action, tuple(cornersList)))
+                
+                else:
+                    successors.append(((nextx,nexty), action, state[2]))
+                
+
             "*** YOUR CODE HERE ***"
 
         self._expanded += 1 # DO NOT CHANGE
+        #print("ABOUT TO RETURN")
+        #print(successors)
         return successors
 
     def getCostOfActions(self, actions):

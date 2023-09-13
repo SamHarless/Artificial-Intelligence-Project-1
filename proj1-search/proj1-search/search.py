@@ -180,50 +180,107 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    q=Queue()
-    q.push((problem.getStartState(), None, None))
-    dict={}
-    dict[problem.getStartState]=(None, None, None)
+    #print(problem.getStartState())
 
-    while not q.isEmpty():
+    
+    
+    if len(problem.getStartState()) == 1 or len(problem.getStartState())<3:
+        q=Queue()
+        q.push((problem.getStartState(), None, None))
+        dict={}
+        #dict[problem.getStartState()]=(None, None, None)
 
-        currNodeTuple=q.pop()
+        
 
-        #print(currNodeTuple)
-        currNode=currNodeTuple[0]
-        if currNode not in dict:
-            dict[currNode]=(currNodeTuple[2], currNodeTuple[1])
+        while not q.isEmpty():
 
-            if problem.isGoalState(currNode):
-                reversedList=[]
-                while problem.getStartState() != currNode:
-                    reversedList.append(dict[currNode][0])
-                    currNode=dict[currNode][1]
+            currNodeTuple=q.pop()
+
+            #print(currNodeTuple)
+            currNode=currNodeTuple[0]
+            if currNode not in dict:
+                dict[currNode]=(currNodeTuple[2], currNodeTuple[1])
+
+                if problem.isGoalState(currNode):
+                    reversedList=[]
+                    while problem.getStartState() != currNode:
+                        reversedList.append(dict[currNode][0])
+                        currNode=dict[currNode][1]
 
 
-                #REVERSE LIST
-                index=len(reversedList)-1
-                stringList=[]
-                while index >= 0:
-                    stringList.append(reversedList[index])
-                    index-=1
+                    #REVERSE LIST
+                    index=len(reversedList)-1
+                    stringList=[]
+                    while index >= 0:
+                        stringList.append(reversedList[index])
+                        index-=1
+                    
+                    
+                    #print(stringToDirections(stringList))
+
+
+                    return stringToDirections(stringList)
                 
+
+
                 
-                #print(stringToDirections(stringList))
+                for succ in problem.getSuccessors(currNode):
+                    if succ[0] in dict:
+                        pass
+                    else:
+                        #q.push(succ[0])
+                        q.push((succ[0], currNode, succ[1]))
+                        #dict[succ[0]]=(succ[1], currNode)
 
 
-                return stringToDirections(stringList)
+    else:
+        #print("ELSE")
+        q=Queue()
+        #print(problem.getStartState())
+        q.push(((problem.getStartState()), None, None)) #(staterepresentation, direction, cameFrom)
+
+        visitedDict={}
+
+        #print("Tester: ", problem.getSuccessors(problem.getStartState()))
+        #print("HERE")
+        while not q.isEmpty():
             
+            currNodeTuple=q.pop()
+            #print("Curr: ", currNodeTuple)
+
+            if currNodeTuple[0] not in visitedDict:
+                visitedDict[currNodeTuple[0]]=(currNodeTuple[1], currNodeTuple[2]) #(action, nodeFrom)
 
 
-            
-            for succ in problem.getSuccessors(currNode):
-                if succ[0] in dict:
-                    pass
-                else:
-                    #q.push(succ[0])
-                    q.push((succ[0], currNode, succ[1]))
-                    #dict[succ[0]]=(succ[1], currNode)
+
+                if problem.isGoalState(currNodeTuple[0]):
+                    #print(currNodeTuple)
+                    #do some shite
+                    reversedList=[]
+                    #reversedList.append(currNodeTuple[1])
+                    currNode=visitedDict[currNodeTuple[2]]
+                    while currNode[1] != problem.getStartState():
+                        reversedList.append(currNode[0])
+                        currNode=visitedDict[currNode[1]]
+                        #print(currNode)
+                    reversedList.append(currNode[0])
+                    #print(reversedList)
+
+                    index=len(reversedList)-1
+                    stringList=[]
+                    while index >= 0:
+                        stringList.append(reversedList[index])
+                        index-=1
+
+                    #print(stringList)
+                    #return ['West', 'West', 'West', 'South', 'South', 'South', 'South', 'North', 'North', 'North', 'North', 'North', 'East', 'East', 'East', 'East', 'East', 'South', 'South', 'South', 'West', 'West', 'West', 'South', 'South', 'East', 'East', 'East']
+                    return stringList
+
+
+
+                for succ in problem.getSuccessors(currNodeTuple[0]):
+                    #getSucc will return: ((x,y), N/S/W/E, (False, False, True, False))
+                    q.push(((succ[0], currNodeTuple[0][1], succ[2]), succ[1], currNodeTuple[0]))
 
     util.raiseNotDefined()
 
