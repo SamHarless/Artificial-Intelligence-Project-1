@@ -40,6 +40,8 @@ from game import Actions
 import util
 import time
 import search
+from util import manhattanDistance
+from queue import Queue
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -525,6 +527,9 @@ class FoodSearchProblem:
                 return 999999
             cost += 1
         return cost
+    
+    def countFood(self, foodGridList):
+        return len(foodGridList)
 
 class AStarFoodSearchAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -562,7 +567,76 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    
+    foodList = foodGrid.asList()
+    score = problem.countFood(foodList)
+    if score == 0: 
+        return 0
+    firstLayerSucc = problem.getSuccessors(state)
+    # secondLayerSucc = []
+    # for succ in firstLayerSucc:
+    #     tempState = (succ[0][0], succ[0][1])
+    #     secondLayerSucc.append(problem.getSuccessors(tempState))
+
+    # allSuccessors = []
+    # for item in firstLayerSucc:
+    #     if type(item) is list:
+    #         for item2 in item:
+    #             allSuccessors.append(item2)
+    #     else:
+    #         allSuccessors.append(item)
+        
+    # for item in secondLayerSucc:
+    #     if type(item) is list:
+    #         for item2 in item:
+    #             allSuccessors.append(item2)
+    #     else:
+    #         allSuccessors.append(item)
+    maxManhattanToFood = float('-inf')
+    for succ in firstLayerSucc:
+        x = succ[0][0][0]
+        y = succ[0][0][1]
+        for foodX in range(foodGrid.width):
+            for foodY in range(foodGrid.height):
+                if foodGrid[foodX][foodY] == True:
+                    # print(problem._expanded)
+                    result = actualDistanceToFood((x,y), (foodX, foodY), problem.walls)
+                    maxManhattanToFood = max(maxManhattanToFood, result)
+                
+    #If food is 2 steps away, go to it, otherwise move in random direction (that direction not being into a wall, and maybe not the previous one you came from?)
+    # print(maxManhattanToFood)
+    # print("#")
+    # print(problem.countFood(foodList))
+    return maxManhattanToFood
+
+def actualDistanceToFood(xy1, xy2, wallGrid):
+    directDict = {"north": (0, 1),
+                   "south": (0, -1),
+                   "east":  (1, 0),
+                   "west":  (-1, 0)}
+    visited = []
+    lowestCost = float('inf')
+    q = Queue()
+    q.put((xy1,0))
+    visited.append(xy1)
+    while not q.empty():
+        node = q.get()
+        for direction in ["north", "south", "east", "west"]:
+            childNode = ((node[0][0] + int(directDict[direction][0]), node[0][1] + int(directDict[direction][1])),node[1]+1)
+
+            if childNode[0][0] > wallGrid.width - 1 or childNode[0][1] > wallGrid.height - 1 or childNode[0][0] < 0 or childNode[0][1] < 0:
+                continue
+            if wallGrid[childNode[0][0]][childNode[0][1]] == True:
+                visited.append(childNode[0])
+                pass
+            elif childNode[0] == xy2 and lowestCost > node[1]:
+                lowestCost = node[1]
+            elif childNode[0] not in visited:
+                visited.append(childNode[0])
+                q.put(childNode)
+            
+    return lowestCost
+            
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
