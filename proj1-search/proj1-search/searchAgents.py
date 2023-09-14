@@ -572,7 +572,6 @@ def foodHeuristic(state, problem):
     score = problem.countFood(foodList)
     if score == 0: 
         return 0
-    
     firstLayerSucc = problem.getSuccessors(state)
     # secondLayerSucc = []
     # for succ in firstLayerSucc:
@@ -603,11 +602,12 @@ def foodHeuristic(state, problem):
                     # print(problem._expanded)
                     result = actualDistanceToFood((x,y), (foodX, foodY), problem.walls)
                     maxManhattanToFood = max(maxManhattanToFood, result)
-
-    
-
+                
     #If food is 2 steps away, go to it, otherwise move in random direction (that direction not being into a wall, and maybe not the previous one you came from?)
-    return maxManhattanToFood + score
+    # print(maxManhattanToFood)
+    # print("#")
+    # print(problem.countFood(foodList))
+    return maxManhattanToFood
 
 def actualDistanceToFood(xy1, xy2, wallGrid):
     directDict = {"north": (0, 1),
@@ -627,13 +627,13 @@ def actualDistanceToFood(xy1, xy2, wallGrid):
             if childNode[0][0] > wallGrid.width - 1 or childNode[0][1] > wallGrid.height - 1 or childNode[0][0] < 0 or childNode[0][1] < 0:
                 continue
             if wallGrid[childNode[0][0]][childNode[0][1]] == True:
+                visited.append(childNode[0])
                 pass
-            elif childNode[0] == xy2 and lowestCost > childNode[1]:
-                lowestCost = childNode[1]
+            elif childNode[0] == xy2 and lowestCost > node[1]:
+                lowestCost = node[1]
             elif childNode[0] not in visited:
                 visited.append(childNode[0])
                 q.put(childNode)
-            
             
     return lowestCost
             
