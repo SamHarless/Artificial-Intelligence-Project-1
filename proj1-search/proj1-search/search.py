@@ -116,6 +116,7 @@ def depthFirstSearch(problem):
     #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     #print("4,5 Succesors", problem.getSuccessors((4,5)))
 
+    print("DFS")
 
     stack=Stack()
     dict={}
@@ -182,7 +183,7 @@ def breadthFirstSearch(problem):
 
     #print(problem.getStartState())
 
-    #print("Calling BFS: ", problem.getStartState())
+    print("Calling BFS: ", problem.getStartState())
 
     
     #hate question 5, so this checks to see if we are doing a regular BFS or a corner one, and does different things for each
@@ -296,6 +297,8 @@ def uniformCostSearch(problem):
     pq=PriorityQueue()
     pq.push((problem.getStartState(),None, None, 0),0)#start has a cost of 0 bc you are alrady there
 
+    print("UCS")
+
     dict={}
 
     while not pq.isEmpty():
@@ -352,6 +355,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #from searchAgents import manhattanHeuristic, euclideanHeuristic    
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    print(problem)
+    print(problem.getStartState())
+
+    print("HELLO")
+
+
     if len(problem.getStartState()) == 1 or len(problem.getStartState())<3:
         pq=PriorityQueue()
         pq.push((problem.getStartState(), None, None, 0),0)#start has a cost of 0 bc you are alrady there

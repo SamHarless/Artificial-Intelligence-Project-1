@@ -315,7 +315,7 @@ class CornersProblem(search.SearchProblem):
             self.numToCornerDict[index]=corner
             index+=1
         
-        
+        print("MAKING PROBLEM OBJECT")
         """
         cornerDict={}
         for corner in self.corners:
@@ -362,6 +362,8 @@ class CornersProblem(search.SearchProblem):
             is the incremental cost of expanding to that successor
         """
 
+        #print("Get Successors State: ", state)
+
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -372,26 +374,36 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             #print("State: ", state)
-            currNode=state[0]
-            x=currNode[0]
-            y=currNode[1]
-            dx, dy = Actions.directionToVector(action)
-            nextx, nexty = int(x+dx), int(y+dy)
+            """
+            if len(state)==2:
+                x=state[0]
+                y=state[1]
+                dx, dy = Actions.directionToVector(action)
+                nextx, nexty = int(x+dx), int(y+dy)
+                successors.append(((nextx, nexty), action, 1))
+            else:
+            """
+            if True:
+                currNode=state[0]
+                x=currNode[0]
+                y=currNode[1]   
+                dx, dy = Actions.directionToVector(action)
+                nextx, nexty = int(x+dx), int(y+dy)
 
-            if not self.walls[nextx][nexty]:
-                
-                if (x,y) in self.corners:
-                    for corner in self.corners:
-                        if (x, y) == corner:
-                            
-                            cornersList=list(state[2])
-                            cornersList[self.cornerDict[corner]]=True
-                            
-                            successors.append(((nextx, nexty), action, tuple(cornersList)))
-                
-                else:
-                    successors.append(((nextx,nexty), action, state[2]))
-                
+                if not self.walls[nextx][nexty]:
+                    
+                    if (x,y) in self.corners:
+                        for corner in self.corners:
+                            if (x, y) == corner:
+                                
+                                cornersList=list(state[2])
+                                cornersList[self.cornerDict[corner]]=True
+                                
+                                successors.append(((nextx, nexty), action, tuple(cornersList)))
+                    
+                    else:
+                        successors.append(((nextx,nexty), action, state[2]))
+                    
 
             "*** YOUR CODE HERE ***"
 
@@ -434,6 +446,22 @@ def cornersHeuristic(state, problem):
     #print("HERE")
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+
+    #print("Corners Heuristic State:" ,state)
+    #print(problem)
+
+    if len(state)==2:
+        print("Corner State: ", state)
+        """
+        if problem.isGoalState(state):
+            return 0
+        """
+        index=0
+        minDistToACorner=float('-inf')
+        while index < 4:
+            minDistToACorner=max(minDistToACorner, myMan(problem.numToCornerDict[index], state))
+            index+=1
+        return minDistToACorner
 
     if state[2][0] and state[2][1] and state[2][2] and state[2][3]:
         #print("ALL TRUE")

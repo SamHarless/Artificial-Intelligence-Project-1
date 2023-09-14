@@ -33,8 +33,9 @@ def wrap_solution(solution):
 
 
 def followAction(state, action, problem):
+  print("STATE IN FOLLOW ACTION: ", state)
   for successor1, action1, cost1 in problem.getSuccessors(state):
-    if action == action1: return successor1
+    if action == action1: return (successor1, action1, cost1)
   return None
 
 def followPath(path, problem):
@@ -702,7 +703,7 @@ class CornerHeuristicSanity(testClasses.TestCase):
         succs = problem.getSuccessors(start_state)
         # cornerConsistencyA
         for succ in succs:
-            h1 = searchAgents.cornersHeuristic(succ[0], problem)
+            h1 = searchAgents.cornersHeuristic(succ, problem)
             if h0 - h1 > 1:
                 grades.addMessage('FAIL: inconsistent heuristic')
                 return False
@@ -718,6 +719,7 @@ class CornerHeuristicSanity(testClasses.TestCase):
             return False
         path = solutionDict['path'].split()
         states = followPath(path, problem)
+        print(states)
         heuristics = []
         for state in states:
             heuristics.append(searchAgents.cornersHeuristic(state, problem))
