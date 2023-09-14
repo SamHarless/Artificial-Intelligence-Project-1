@@ -592,7 +592,7 @@ def foodHeuristic(state, problem):
         for foodX in range(foodGrid.width):
             for foodY in range(foodGrid.height):
                 if foodGrid[foodX][foodY] == True:
-                    #print("hello")
+                    # print(problem._expanded)
                     result = actualDistanceToFood((x,y), (foodX, foodY), problem.walls)
                     maxManhattanToFood = max(maxManhattanToFood, result)
 
@@ -611,18 +611,22 @@ def actualDistanceToFood(xy1, xy2, wallGrid):
     q = Queue()
     q.put((xy1,0))
     visited.append(xy1)
-    while q:
+    while not q.empty():
         node = q.get()
         for direction in ["north", "south", "east", "west"]:
             childNode = ((node[0][0] + int(directDict[direction][0]), node[0][1] + int(directDict[direction][1])),node[1]+1)
-            #print(childNode)
+
+            if childNode[0][0] > wallGrid.width - 1 or childNode[0][1] > wallGrid.height - 1 or childNode[0][0] < 0 or childNode[0][1] < 0:
+                continue
             if wallGrid[childNode[0][0]][childNode[0][1]] == True:
                 pass
-            elif childNode[0] == xy2 and childNode[1] < lowestCost:
-                return childNode[1]
+            elif childNode[0] == xy2 and lowestCost > childNode[1]:
+                lowestCost = childNode[1]
             elif childNode[0] not in visited:
                 visited.append(childNode[0])
                 q.put(childNode)
+            
+            
     return lowestCost
             
 
