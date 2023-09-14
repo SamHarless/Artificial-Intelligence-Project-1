@@ -498,6 +498,7 @@ class FoodSearchProblem:
         return state[1].count() == 0
 
     def getSuccessors(self, state):
+        #print(state)
         "Returns successor states, the actions they require, and a cost of 1."
         successors = []
         self._expanded += 1 # DO NOT CHANGE
@@ -591,6 +592,10 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+        path=search.bfs(problem)
+        #print(path)
+        return path
+
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
@@ -626,6 +631,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
+
+        if self.food[x][y]:
+            #print("FOOD HERE")
+            return True
+        return False
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
