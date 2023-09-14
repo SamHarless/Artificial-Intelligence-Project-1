@@ -418,6 +418,7 @@ def myMan(xy1, xy2):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 def cornersHeuristic(state, problem):
+    import math
     """
     A heuristic for the CornersProblem that you defined.
 
@@ -439,12 +440,23 @@ def cornersHeuristic(state, problem):
         return 0
     
     index=0
-    minDistToACorner=float('inf')
+    minDistToACorner=float('-inf')
+    #listOfDists=[]
     while index < 4:
         if not state[2][index]:
-            minDistToACorner=min(minDistToACorner, myMan(problem.numToCornerDict[index], state[0]))
+            minDistToACorner=max(minDistToACorner, myMan(problem.numToCornerDict[index], state[0]))
+            #listOfDists.append(myMan(problem.numToCornerDict[index], state[0]))
         index+=1
+
+
     #print(minDistToACorner)
+    #listOfDists.sort()
+    #if len(listOfDists) > 1:
+        #return listOfDists[0]+listOfDists[1]
+    
+    #adding 2nd to min distance if there is more than corner left is soooooo good, but not consitent
+
+    
     return minDistToACorner
 
     #print(state)
