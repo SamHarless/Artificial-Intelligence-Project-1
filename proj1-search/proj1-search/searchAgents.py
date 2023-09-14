@@ -515,14 +515,8 @@ class FoodSearchProblem:
             cost += 1
         return cost
     
-    def getFoodCount(self, foodGridList):
-        count = 0
-
-        for item in foodGridList:
-            if item == True:
-                count+=1
-
-        return count
+    def countFood(self, foodGridList):
+        return len(foodGridList)
 
 class AStarFoodSearchAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -562,8 +556,9 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     
     foodList = foodGrid.asList()
-    score = problem.getFoodCount(foodList)
-
+    score = problem.countFood(foodList)
+    if score == 0: 
+        return 0
     
     firstLayerSucc = problem.getSuccessors(state)
     # secondLayerSucc = []
@@ -599,7 +594,7 @@ def foodHeuristic(state, problem):
     
 
     #If food is 2 steps away, go to it, otherwise move in random direction (that direction not being into a wall, and maybe not the previous one you came from?)
-    return maxManhattanToFood
+    return maxManhattanToFood + score
 
 def actualDistanceToFood(xy1, xy2, wallGrid):
     directDict = {"north": (0, 1),
