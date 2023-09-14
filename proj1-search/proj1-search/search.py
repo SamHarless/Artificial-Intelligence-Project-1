@@ -182,6 +182,8 @@ def breadthFirstSearch(problem):
 
     #print(problem.getStartState())
 
+    #print("Calling BFS: ", problem.getStartState())
+
     
     #hate question 5, so this checks to see if we are doing a regular BFS or a corner one, and does different things for each
     if len(problem.getStartState()) == 1 or len(problem.getStartState())<3:

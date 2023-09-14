@@ -420,6 +420,7 @@ def myMan(xy1, xy2):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 def cornersHeuristic(state, problem):
+    import math
     """
     A heuristic for the CornersProblem that you defined.
 
@@ -441,12 +442,23 @@ def cornersHeuristic(state, problem):
         return 0
     
     index=0
-    minDistToACorner=float('inf')
+    minDistToACorner=float('-inf')
+    #listOfDists=[]
     while index < 4:
         if not state[2][index]:
-            minDistToACorner=min(minDistToACorner, myMan(problem.numToCornerDict[index], state[0]))
+            minDistToACorner=max(minDistToACorner, myMan(problem.numToCornerDict[index], state[0]))
+            #listOfDists.append(myMan(problem.numToCornerDict[index], state[0]))
         index+=1
+
+
     #print(minDistToACorner)
+    #listOfDists.sort()
+    #if len(listOfDists) > 1:
+        #return listOfDists[0]+listOfDists[1]
+    
+    #adding 2nd to min distance if there is more than corner left is soooooo good, but not consitent
+
+    
     return minDistToACorner
 
     #print(state)
@@ -488,6 +500,7 @@ class FoodSearchProblem:
         return state[1].count() == 0
 
     def getSuccessors(self, state):
+        #print(state)
         "Returns successor states, the actions they require, and a cost of 1."
         successors = []
         self._expanded += 1 # DO NOT CHANGE
@@ -653,6 +666,10 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+        path=search.bfs(problem)
+        #print(path)
+        return path
+
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
@@ -688,6 +705,11 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
+
+        if self.food[x][y]:
+            #print("FOOD HERE")
+            return True
+        return False
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
